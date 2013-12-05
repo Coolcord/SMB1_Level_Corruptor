@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMessageBox>
 
 #include "binarymanipulator.h"
+#include "smb1levelgenerator.h"
 #include <string>
 #include <vector>
 
@@ -19,18 +21,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::generateLevels()
 {
-    BinaryManipulator *bm = new BinaryManipulator();
-    std::vector<bool> bits;
-    for (int i = 0; i < 8; ++i)
+    SMB1LevelGenerator *smb1 = new SMB1LevelGenerator();
+    //std::string romLocation = "C:\\Users\\Cord\\Desktop\\Level-Headed Test Files\\Super Mario Bros. Hacked.nes";
+    std::string romLocation = "/mnt/Seven/Users/Cord/Desktop/Level-Headed Test Files/Super Mario Bros. Hacked.nes";
+
+    //std::basic_fstream<unsigned char> file;
+    std::fstream file;
+    file.open(romLocation.c_str(), std::ios::in | std::ios::out | std::ios::binary);
+
+    if (!smb1->isROMValid(file))
     {
-        bits.push_back(false);
+        QMessageBox::critical(this, "Error!", "This is NOT an NES ROM");
+        return;
     }
 
-    bm->WriteByteToBitVector(bits, 0, 0xFF);
-    bm->WriteHexDigitToBitVector(bits, 0, 0x0, 0, 1);
-    std::string combo = bm->BitVectorToString(bits);
+    if (smb1->RandomizeAllLevels(file))
+    {
+        QMessageBox::information(this, "Success!", "Changes made!");
+    }
+    else
+    {
+        QMessageBox::critical(this, "Error!", "Something went wrong...");
+    }
 
-    ui->btnGenerateLevels->setText(combo.c_str());
-    delete bm;
-    return;
+    delete smb1;
 }

@@ -15,9 +15,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    binarymanipulator.cpp
+    binarymanipulator.cpp \
+    smb1levelgenerator.cpp
 
 HEADERS  += mainwindow.h \
-    binarymanipulator.h
+    binarymanipulator.h \
+    smb1levelgenerator.h
 
 FORMS    += mainwindow.ui
