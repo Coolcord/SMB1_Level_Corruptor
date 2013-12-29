@@ -113,7 +113,8 @@ bool SMB1LevelGenerator::RandomizeLevel(std::fstream &file, int objectOffset, in
     std::vector<unsigned char> objects = ReadLevelObjects(file, objectOffset);
     std::vector<unsigned char> enemies = ReadLevelEnemies(file, EnemyOffset);
 
-    GenerateBasicLevel(header, objects, enemies);
+    //GenerateBasicLevel(header, objects, enemies);
+    GenerateTreeLevel(header, objects, enemies);
 
     //Write Header
     file.clear();
@@ -180,28 +181,68 @@ void SMB1LevelGenerator::GenerateBasicLevel(std::vector<unsigned char> &header, 
 
     for (int i = 0; i < maxObjects - 1; i += 2)
     {
+        std::vector<bool> positionBits = { false, false, false, false, false, false, false, false };
+        std::vector<bool> objectBits = { false, false, false, false, false, false, false, false };
+
         //Handle the end of the level
-        if (i == maxObjects - 6)
+        if (i == maxObjects - 4)
         {
-            objects.at(i) = 0x5F;
-            objects.at(i + 1) = 0xB8; //Steps
-            continue;
-        }
-        else if (i == maxObjects - 4)
-        {
-            objects.at(i) = 0x6D;
-            objects.at(i + 1) = 0xC1; //Flagpole
+            //Determine x position
+            if (lastX > 0xF)
+            {
+                objectBits.at(0) = true; //set the page flag to make a new page
+                lastX -= 0x10;
+                currentX = lastX + 7;
+            }
+            else
+            {
+                currentX = lastX + 7;
+                if (currentX > 0xF)
+                {
+                    objectBits.at(0) = true; //set the page flag to make a new page
+                    currentX -= 0x10; //reset x offset on new page
+                }
+            }
+
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 0, currentX); //x
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0xD); //y
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x4, 1, 3); //Flagpole
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x1); //Flagpole
+
+            lastX = currentX;
+            objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+            objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
             continue;
         }
         else if (i == maxObjects - 2)
         {
-            objects.at(i) = 0xAF;
-            objects.at(i + 1) = 0x26; //Castle
+            //Determine x position
+            if (lastX > 0xF)
+            {
+                objectBits.at(0) = true; //set the page flag to make a new page
+                lastX -= 0x10;
+                currentX = lastX + 4;
+            }
+            else
+            {
+                currentX = lastX + 4;
+                if (currentX > 0xF)
+                {
+                    objectBits.at(0) = true; //set the page flag to make a new page
+                    currentX -= 0x10; //reset x offset on new page
+                }
+            }
+
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 0, currentX); //x
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0xF); //y
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x2, 1, 3); //Castle
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x6); //Castle
+
+            lastX = currentX;
+            objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+            objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
             continue;
         }
-
-        std::vector<bool> positionBits = { false, false, false, false, false, false, false, false };
-        std::vector<bool> objectBits = { false, false, false, false, false, false, false, false };
 
         int chance = 0;
 
@@ -234,6 +275,23 @@ void SMB1LevelGenerator::GenerateBasicLevel(std::vector<unsigned char> &header, 
         //Set the x position
         BinaryManipulator::WriteHexDigitToBitVector(positionBits, 0, currentX);
 
+        //Put Stairs at the end of the level
+        if (i == maxObjects - 6)
+        {
+            if (currentX == 0x0)
+            {
+                currentX++; //Prevent a bug in the SMB1 engine with the flagpole being placed at the edge of the page
+            }
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0xF); //y
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0xB, 1, 3); //Stairs
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x8); //Stairs
+
+            lastX = currentX + 8;
+            objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+            objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
+            continue;
+        }
+
         //Determine object to place
         chance = (rand() % 60) + 1;
 
@@ -242,7 +300,7 @@ void SMB1LevelGenerator::GenerateBasicLevel(std::vector<unsigned char> &header, 
             BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x7, 1, 3);
 
             //Determine height
-            chance = (rand() % 30) + 1;;
+            chance = (rand() % 30) + 1;
             if (chance <= 10)
             { //Pipe length 2
                 BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0x9);
@@ -591,7 +649,7 @@ void SMB1LevelGenerator::GenerateBasicLevel(std::vector<unsigned char> &header, 
                     lastX += (rand() % 3) + 2; //there is no hole, so pretend like there is one
                 }
 
-                chance = (rand() % 20) + 1;;
+                chance = (rand() % 20) + 1;
                 if (chance <= 10 && objectsLeft >= 2)
                 { //Landing platform is 2 blocks thick
                     if (size == 1)
@@ -849,6 +907,204 @@ void SMB1LevelGenerator::GenerateBasicLevel(std::vector<unsigned char> &header, 
                 }
             }
             continue;
+        }
+
+        objectsLeft--;
+        //Now set the bytes and move on
+        objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+        objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
+    }
+}
+
+void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, std::vector<unsigned char> &objects, std::vector<unsigned char> &enemies)
+{
+    //Set everything possible to generics and blanks for now
+    header.at(0) = 0x90;
+    header.at(1) = 0x11;
+    for (unsigned int i = 0; i < objects.size() - 1; i += 2)
+    {
+        objects.at(i) = 0x0F;
+        objects.at(i + 1) = 0x7F;
+    }
+    if (enemies.size() % 2 == 1)
+    {
+        for (unsigned int i = 0; i < enemies.size(); ++i)
+        {
+            if (i == enemies.size() - 1)
+                enemies.at(i) = 0xFF;
+            else
+                enemies.at(i) = 0x18;
+        }
+    }
+    else
+    {
+        for (unsigned int i = 0; i < enemies.size(); ++i)
+        {
+            enemies.at(i) = 0x18;
+        }
+    }
+
+    int currentX = 0x0;
+    //int currentY = 0x0;
+    int lastX = 0xF;
+    //int lastY = 0x0;
+
+    int maxObjects = objects.size();
+    int objectsLeft = (maxObjects - 8) / 2; //the last 8 is to ensure that the level can still be finished
+
+    //Handle the beginning of the level
+    objects.at(0) = 0x0F;
+    objects.at(1) = 0x26;
+    objects.at(2) = 0xFE;
+    objects.at(3) = 0x10;
+
+    for (int i = 4; i < maxObjects - 1; i += 2)
+    {
+        std::vector<bool> positionBits = { false, false, false, false, false, false, false, false };
+        std::vector<bool> objectBits = { false, false, false, false, false, false, false, false };
+
+        //Handle the end of the level
+        if (i == maxObjects - 4)
+        {
+            //Determine x position
+            if (lastX > 0xF)
+            {
+                objectBits.at(0) = true; //set the page flag to make a new page
+                lastX -= 0x10;
+                currentX = lastX + 7;
+            }
+            else
+            {
+                currentX = lastX + 7;
+                if (currentX > 0xF)
+                {
+                    objectBits.at(0) = true; //set the page flag to make a new page
+                    currentX -= 0x10; //reset x offset on new page
+                }
+            }
+
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 0, currentX); //x
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0xD); //y
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x4, 1, 3); //Flagpole
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x1); //Flagpole
+
+            lastX = currentX;
+            objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+            objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
+            continue;
+        }
+        else if (i == maxObjects - 2)
+        {
+            //Determine x position
+            if (lastX > 0xF)
+            {
+                objectBits.at(0) = true; //set the page flag to make a new page
+                lastX -= 0x10;
+                currentX = lastX + 4;
+            }
+            else
+            {
+                currentX = lastX + 4;
+                if (currentX > 0xF)
+                {
+                    objectBits.at(0) = true; //set the page flag to make a new page
+                    currentX -= 0x10; //reset x offset on new page
+                }
+            }
+
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 0, currentX); //x
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0xF); //y
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x2, 1, 3); //Castle
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x6); //Castle
+
+            lastX = currentX;
+            objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+            objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
+            continue;
+        }
+
+        int chance = 0;
+
+        //Determine x position
+        if (lastX > 0xF)
+        {
+            objectBits.at(0) = true; //set the page flag to make a new page
+            lastX -= 0x10;
+
+            if (lastX < 0x5)
+            {
+                currentX = LowballRandomValue(0x1, 0xB) + lastX;
+            }
+            else
+            {
+                currentX = LowballRandomValue((lastX + 1), 0xF);
+            }
+        }
+        else
+        {
+            currentX = LowballRandomValue(0x1, 0xB) + lastX;
+
+            if (currentX > 0xF)
+            {
+                objectBits.at(0) = true; //set the page flag to make a new page
+                currentX -= 0x10; //reset x offset on new page
+            }
+        }
+
+        //Set the x position
+        BinaryManipulator::WriteHexDigitToBitVector(positionBits, 0, currentX);
+
+        //Generate Ground at the end of the level
+        if (i == maxObjects - 8)
+        {
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0xE); //y
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x1, 1, 3); //Ground
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x1); //Ground
+
+            lastX = currentX + 3; //have at least 3 blocks of safe zone
+            objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+            objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
+            continue;
+        }
+        else if (i == maxObjects - 6) //Stairs at the end of the level
+        {
+            if (currentX == 0x0)
+            {
+                currentX++; //Prevent a bug in the SMB1 engine with the flagpole being placed at the edge of the page
+            }
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0xF); //y
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0xB, 1, 3); //Stairs
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x8); //Stairs
+
+            lastX = currentX + 8;
+            objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
+            objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
+            continue;
+        }
+
+        //Determine object to place
+        chance = (rand() % 60) + 1;
+        if (chance <= 60)
+        {
+            //TEST CODE FOR NOW!!!!
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x1, 1, 3);
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x3);
+
+            //Determine height
+            chance = (rand() % 30) + 1;
+            if (chance <= 10)
+            {
+                BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0x9);
+            }
+            else if (chance <= 20)
+            {
+                BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0x8);
+            }
+            else if (chance <= 30)
+            {
+                BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0x7);
+            }
+            lastX = currentX + 3; //DEBUG CODE!!!
         }
 
         objectsLeft--;

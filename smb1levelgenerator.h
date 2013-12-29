@@ -13,6 +13,7 @@ public:
 private:
     bool RandomizeLevel(std::fstream &file, int objectOffset, int EnemyOffset);
     void GenerateBasicLevel(std::vector<unsigned char> &header, std::vector<unsigned char> &objects, std::vector<unsigned char> &enemies);
+    void GenerateTreeLevel(std::vector<unsigned char> &header, std::vector<unsigned char> &objects, std::vector<unsigned char> &enemies);
     int AddItemsToBlockRow(int maxObjects, int &objectsLeft, std::vector<unsigned char> &objects, int blockRow);
     bool isBannedObject(std::vector<unsigned char> &hex);
     bool isBannedEnemy(std::vector<unsigned char> &hex);
