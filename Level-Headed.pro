@@ -22,4 +22,6 @@ HEADERS  += mainwindow.h \
     binarymanipulator.h \
     smb1levelgenerator.h
 
+RC_FILE = Level-Headed.rc
+
 FORMS    += mainwindow.ui

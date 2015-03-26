@@ -1,5 +1,6 @@
 #include "smb1levelgenerator.h"
 #include "binarymanipulator.h"
+#include <QTime>
 #include <cstdlib>
 #include <vector>
 
@@ -71,7 +72,7 @@ const int LEVEL_8_3_ENEMIES = 0x00001E8E;
 
 SMB1LevelGenerator::SMB1LevelGenerator()
 {
-    srand(time(NULL));
+    srand(QTime::currentTime().msecsSinceStartOfDay());
 }
 
 bool SMB1LevelGenerator::RandomizeAllLevels(std::fstream &file)
@@ -460,7 +461,7 @@ void SMB1LevelGenerator::GenerateBasicLevel(std::vector<unsigned char> &header, 
             objectsLeft--;
             objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
             objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
-            i += AddItemsToBlockRow(maxObjects, objectsLeft, objects, i);
+            i += AddItemsToBlockRow(objectsLeft, objects, i);
             continue;
         }
         else if (chance <= 40)
@@ -510,7 +511,7 @@ void SMB1LevelGenerator::GenerateBasicLevel(std::vector<unsigned char> &header, 
             objectsLeft--;
             objects.at(i) = (short)BinaryManipulator::BitVectorToHex(positionBits);
             objects.at(i + 1) = (short)BinaryManipulator::BitVectorToHex(objectBits);
-            i += AddItemsToBlockRow(maxObjects, objectsLeft, objects, i);
+            i += AddItemsToBlockRow(objectsLeft, objects, i);
             continue;
         }
         else if (chance <= 50)
@@ -948,7 +949,6 @@ void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, s
     int currentX = 0x0;
     int currentY = 0xB;
     int lastX = 0xF;
-    int lastY = 0xA;
 
     int maxObjects = objects.size();
     int objectsLeft = (maxObjects - 8) / 2; //the last 8 is to ensure that the level can still be finished
@@ -1133,7 +1133,7 @@ void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, s
     }
 }
 
-int SMB1LevelGenerator::AddItemsToBlockRow(int maxObjects, int &objectsLeft, std::vector<unsigned char> &objects, int blockRow)
+int SMB1LevelGenerator::AddItemsToBlockRow(int &objectsLeft, std::vector<unsigned char> &objects, int blockRow)
 {
     bool isBrick = false;
     //The y coordinate will need to be improved upon later for higher block rows

@@ -104,7 +104,7 @@ namespace BinaryManipulator
 
     int BitVectorToHex(std::vector<bool> bits, int start, int end)
     {
-        if (end >= bits.size())
+        if (end >= static_cast<int>(bits.size()))
             throw "End cannot be greater than the bit vector size!";
         int value = 0;
         int j = 1;
