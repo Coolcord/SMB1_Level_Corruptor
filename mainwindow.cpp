@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "binarymanipulator.h"
 #include "smb1levelgenerator.h"
@@ -41,10 +42,13 @@ void MainWindow::on_btnGenerate_clicked()
     }
 
     SMB1LevelGenerator smb1;
-    //std::string romLocation = "C:\\Users\\Cord\\Desktop\\Level-Headed Test Files\\Super Mario Bros. Hacked.nes";
-    std::string romLocation = "/mnt/Seven/Users/Cord/Desktop/Level-Headed Test Files/Super Mario Bros. Hacked.nes";
+    QString qROMLocation = QFileDialog::getOpenFileName(this, "Open a SMB1 ROM", QApplication::applicationDirPath(), "NES ROMs (*.nes)");
+    if (qROMLocation == NULL || qROMLocation.isEmpty())
+    {
+        return; //nothing to do... the user canceled
+    }
+    std::string romLocation = qROMLocation.toStdString();
 
-    //std::basic_fstream<unsigned char> file;
     std::fstream file;
     file.open(romLocation.c_str(), std::ios::in | std::ios::out | std::ios::binary);
 
@@ -54,7 +58,7 @@ void MainWindow::on_btnGenerate_clicked()
         return;
     }
 
-    if (smb1.RandomizeAllLevels(file))
+    if (smb1.RandomizeAllLevels(file, randomizeObjects, randomizeEnemies))
     {
         QMessageBox::information(this, "Success!", "Changes made!");
     }

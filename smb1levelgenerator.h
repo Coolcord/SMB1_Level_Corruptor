@@ -8,10 +8,10 @@ class SMB1LevelGenerator
 {
 public:
     SMB1LevelGenerator();
-    bool RandomizeAllLevels(std::fstream &file);
+    bool RandomizeAllLevels(std::fstream &file, bool randomizeObjects, bool randomizeEnemies);
     bool isROMValid(std::fstream &file);
 private:
-    bool RandomizeLevel(std::fstream &file, int objectOffset, int EnemyOffset);
+    bool RandomizeLevel(std::fstream &file, int objectOffset, int EnemyOffset, bool randomizeObjects, bool randomizeEnemies);
     void GenerateBasicLevel(std::vector<unsigned char> &header, std::vector<unsigned char> &objects, std::vector<unsigned char> &enemies);
     void GenerateTreeLevel(std::vector<unsigned char> &header, std::vector<unsigned char> &objects, std::vector<unsigned char> &enemies);
     int AddItemsToBlockRow(int &objectsLeft, std::vector<unsigned char> &objects, int blockRow);

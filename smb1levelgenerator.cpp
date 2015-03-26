@@ -75,7 +75,7 @@ SMB1LevelGenerator::SMB1LevelGenerator()
     srand(QTime::currentTime().msecsSinceStartOfDay());
 }
 
-bool SMB1LevelGenerator::RandomizeAllLevels(std::fstream &file)
+bool SMB1LevelGenerator::RandomizeAllLevels(std::fstream &file, bool randomizeObjects, bool randomizeEnemies)
 {
 
     std::vector<int> offsets = { LEVEL_1_1_OBJECTS, LEVEL_1_1_ENEMIES,
@@ -102,20 +102,26 @@ bool SMB1LevelGenerator::RandomizeAllLevels(std::fstream &file)
 
     for (unsigned int i = 0; i <= offsets.size() - 2; i += 2)
     {
-        RandomizeLevel(file, offsets.at(i), offsets.at(i + 1));
+        RandomizeLevel(file, offsets.at(i), offsets.at(i + 1), randomizeObjects, randomizeEnemies);
     }
 
     return true;
 }
 
-bool SMB1LevelGenerator::RandomizeLevel(std::fstream &file, int objectOffset, int EnemyOffset)
+bool SMB1LevelGenerator::RandomizeLevel(std::fstream &file, int objectOffset, int EnemyOffset, bool randomizeObjects, bool randomizeEnemies)
 {
     std::vector<unsigned char> header = ReadLevelHeader(file, objectOffset - 2);
     std::vector<unsigned char> objects = ReadLevelObjects(file, objectOffset);
     std::vector<unsigned char> enemies = ReadLevelEnemies(file, EnemyOffset);
 
-    //GenerateBasicLevel(header, objects, enemies);
-    GenerateTreeLevel(header, objects, enemies);
+    if (randomizeObjects)
+    {
+        RandomizeObjects(objects);
+    }
+    if (randomizeEnemies)
+    {
+        RandomizeEnemies(enemies);
+    }
 
     //Write Header
     file.clear();
