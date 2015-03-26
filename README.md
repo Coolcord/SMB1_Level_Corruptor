@@ -30,7 +30,7 @@ feel free to send me an email at coolcord24@gmail.com
 Q: What is this?
 A: This is a level corruptor for Super Mario Bros. 1 on the NES. It originally acted
    as a prototype for what is now known as Level-Headed. Before writing Level-Headed,
-   I wanted to be sure that my idea was feesible and, most importantly, I wanted to
+   I wanted to be sure that my idea was feasible and, most importantly, I wanted to
    make sure that I could do it.
 
 Q: Why are you releasing this?

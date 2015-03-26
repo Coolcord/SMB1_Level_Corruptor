@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     QMessageBox::information(this, "SMB1 Level Corruptor", "This application is a prototype for a random level generator "
                              "for Super Mario Bros. 1 on the NES (which is now known as Level-Headed). It messes with the level objects "
-                             "and enemies to demonstrate that it is feesible to randomly generate levels.");
+                             "and enemies to demonstrate that it is feasible to randomly generate levels.");
     QMessageBox::information(this, "SMB1 Level Corruptor", "Keep in mind that this simply randomizes all of the objects and/or enemies "
                              "in the game. It may create scenarios that are impossible to complete, but the game should never crash.");
     QMessageBox::information(this, "SMB1 Level Corruptor", "You'll need to provide an unmodified \"Super Mario Bros. (JU) [!].nes\" ROM. "
