@@ -944,10 +944,11 @@ void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, s
         }
     }
 
+
     int currentX = 0x0;
-    //int currentY = 0x0;
+    int currentY = 0xB;
     int lastX = 0xF;
-    //int lastY = 0x0;
+    int lastY = 0xA;
 
     int maxObjects = objects.size();
     int objectsLeft = (maxObjects - 8) / 2; //the last 8 is to ensure that the level can still be finished
@@ -1026,6 +1027,7 @@ void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, s
         int chance = 0;
 
         //Determine x position
+        /*
         if (lastX > 0xF)
         {
             objectBits.at(0) = true; //set the page flag to make a new page
@@ -1050,6 +1052,10 @@ void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, s
                 currentX -= 0x10; //reset x offset on new page
             }
         }
+        */
+        //DEBUG CODE!!!
+        objectBits.at(0) = true;
+        currentX = 0x0;
 
         //Set the x position
         BinaryManipulator::WriteHexDigitToBitVector(positionBits, 0, currentX);
@@ -1086,11 +1092,18 @@ void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, s
         chance = (rand() % 60) + 1;
         if (chance <= 60)
         {
+            //Tree
+
+
+
             //TEST CODE FOR NOW!!!!
             BinaryManipulator::WriteHexDigitToBitVector(objectBits, 1, 0x1, 1, 3);
-            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0x3);
+            BinaryManipulator::WriteHexDigitToBitVector(objectBits, 4, 0xA);
 
+            currentY--;
+            if (currentY == 0) currentY = 0xB;
             //Determine height
+            /*
             chance = (rand() % 30) + 1;
             if (chance <= 10)
             {
@@ -1104,7 +1117,13 @@ void SMB1LevelGenerator::GenerateTreeLevel(std::vector<unsigned char> &header, s
             {
                 BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, 0x7);
             }
-            lastX = currentX + 3; //DEBUG CODE!!!
+            */
+
+
+
+            BinaryManipulator::WriteHexDigitToBitVector(positionBits, 4, currentY); //y
+
+            lastX = currentX + 0xA; //DEBUG CODE!!!
         }
 
         objectsLeft--;
