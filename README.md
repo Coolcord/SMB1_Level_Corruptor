@@ -17,6 +17,7 @@ I never plan on releasing this with any part of Level-Headed. It has become
 its own separate entity.
 
 In order to use this, you will need to provide the following unmodified NES ROM:
+
 "Super Mario Bros. (JU) (PRG0) [!].nes"
 
 Make a backup of this ROM before using this application! SMB1 ROM Corruptor will
@@ -28,12 +29,14 @@ feel free to send me an email at coolcord24@gmail.com
 -==================================- FAQ -==================================-
 
 Q: What is this?
+
 A: This is a level corruptor for Super Mario Bros. 1 on the NES. It originally acted
    as a prototype for what is now known as Level-Headed. Before writing Level-Headed,
    I wanted to be sure that my idea was feasible and, most importantly, I wanted to
    make sure that I could do it.
 
 Q: Why are you releasing this?
+
 A: This prototype contains two functions which will not be included in Level-Headed.
    These are "Randomize Level Objects" and "Randomize Enemy Objects". These will never
    see the light of day in Level-Headed, since they tend to create scenarios that are
@@ -42,6 +45,7 @@ A: This prototype contains two functions which will not be included in Level-Hea
    doesn't crash.
 
 Q: Why is your code so bad?
+
 A: Keep in mind that this is a prototype. I was never planning on turning this code
    into Level-Headed itself. It was simply a place for me to try my ideas out and see
    how difficult it would be to randomly generate levels in Super Mario Bros. 1 once
@@ -49,11 +53,13 @@ A: Keep in mind that this is a prototype. I was never planning on turning this c
    is a mess. The ultimate goal of this prototype was to mess with the level objects
    and enemies without causing the game to crash.
    
- Q: Can you add X into SMB1 Level Corruptor?
- A: I do not plan on supporting this application in any way. I'm simply releasing
-    it for the curious. Anyone is free to do anything with the code of SMB1 Level
-	Corruptor as long as they abide the GPLv2 license.
+Q: Can you add X into SMB1 Level Corruptor?
+
+A: I do not plan on supporting this application in any way. I'm simply releasing
+   it for the curious. Anyone is free to do anything with the code of SMB1 Level
+   Corruptor as long as they abide the GPLv2 license.
 
 Q: Where can I download a copy?
+
 A: You can download the Windows version here:
    http://www.mediafire.com/download/ffa4fqgxfh30k3s/SMB1_Level_Corruptor.exe
