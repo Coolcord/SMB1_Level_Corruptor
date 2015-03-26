@@ -1,7 +1,7 @@
 SMB1 Level Corruptor
 ====================
 
-The prototype for Level-Headed! Randomizes level objects and enemies.
+The prototype for Level-Headed! Randomizes level objects and enemies in Super Mario Bros. 1 on the NES.
 
 -=========================- About SMB1 Level Corruptor -=========================-
 
