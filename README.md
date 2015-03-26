@@ -25,7 +25,7 @@ hack the supplied file!
 If you wish to contact me about the application, or anything of the like,
 feel free to send me an email at coolcord24@gmail.com
 
--=====================================- FAQ -=====================================-
+-====================================- FAQ -====================================-
 
 Q: What is this?
 A: This is a level corruptor for Super Mario Bros. 1 on the NES. It originally acted
@@ -53,3 +53,7 @@ A: Keep in mind that this is a prototype. I was never planning on turning this c
  A: I do not plan on supporting this application in any way. I'm simply releasing
     it for the curious. Anyone is free to do anything with the code of SMB1 Level
 	Corruptor as long as they abide the GPLv2 license.
+
+Q: Where can I download a copy?
+A: You can download the Windows version here:
+   http://www.mediafire.com/download/ffa4fqgxfh30k3s/SMB1_Level_Corruptor.exe
