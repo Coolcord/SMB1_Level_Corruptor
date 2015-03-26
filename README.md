@@ -25,7 +25,7 @@ hack the supplied file!
 If you wish to contact me about the application, or anything of the like,
 feel free to send me an email at coolcord24@gmail.com
 
--====================================- FAQ -====================================-
+-==================================- FAQ -==================================-
 
 Q: What is this?
 A: This is a level corruptor for Super Mario Bros. 1 on the NES. It originally acted
