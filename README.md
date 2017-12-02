@@ -24,7 +24,7 @@ Make a backup of this ROM before using this application! SMB1 ROM Corruptor will
 hack the supplied file!
 
 If you wish to contact me about the application, or anything of the like,
-feel free to send me an email at coolcord24@gmail.com
+feel free to send me an email at coolcord24@tutanota.com
 
 -==================================- FAQ -==================================-
 
